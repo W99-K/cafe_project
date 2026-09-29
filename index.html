@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>바이브 카페 주문서</title>
+    <meta name="description" content="따뜻한 카페 감성의 실시간 금액 계산, 실시간 주문 게시판 및 엑셀 저장 기능을 갖춘 바이브 카페 주문서" />
+    <meta property="og:title" content="바이브 카페 주문서" />
+    <meta property="og:description" content="당신의 하루에 바이브를 더하다 - 바이브 카페 실시간 주문서 & 실시간 주문 게시판" />
+    <meta property="og:type" content="website" />
+    <!-- 외부 스타일시트 연결 -->
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- 주문서 및 게시판 메인 컨테이너 (반응형 가운데 정렬) -->
+    <main class="order-container" id="vibe-cafe-app">
+      <!-- 페이지 상단: 카페 로고, 카페 이름, 부제 -->
+      <header class="header-section" id="cafe-header">
+        <div class="cafe-logo" id="cafe-logo" aria-label="카페 로고">☕</div>
+        <h1 class="cafe-title" id="cafe-title">바이브 카페</h1>
+        <p class="cafe-subtitle" id="cafe-subtitle">당신의 하루에 바이브를 더하다</p>
+      </header>
+
+      <!-- 상단 탭 메뉴 네비게이션 (주문서 작성 탭 vs 실시간 주문 게시판 탭 선택) -->
+      <nav class="tab-navigation" role="tablist" aria-label="바이브 카페 주요 메뉴 탐색">
+        <!-- 1) 주문서 작성 탭 버튼 -->
+        <button
+          type="button"
+          class="tab-button active"
+          id="tab-btn-order"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-order"
+          tabindex="0"
+        >
+          <span class="tab-icon" aria-hidden="true">📝</span>
+          <span class="tab-label">주문서 작성</span>
+        </button>
+
+        <!-- 2) 실시간 주문 게시판 탭 버튼 (실시간 접수 카운트 뱃지 포함) -->
+        <button
+          type="button"
+          class="tab-button"
+          id="tab-btn-board"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-board"
+          tabindex="-1"
+        >
+          <span class="tab-icon" aria-hidden="true">📋</span>
+          <span class="tab-label">주문 게시판</span>
+          <span class="tab-badge" id="board-live-badge" title="현재 등록된 주문 수">0</span>
+        </button>
+      </nav>
+
+      <!-- 오류 및 안내 메시지 알림 바 -->
+      <div class="alert-box" id="alert-box" role="alert" aria-live="polite"></div>
+
+      <!-- ================================================================= -->
+      <!-- [탭 1] 주문서 작성 패널 (Order Form Panel)                          -->
+      <!-- ================================================================= -->
+      <section
+        id="panel-order"
+        class="tab-panel active"
+        role="tabpanel"
+        aria-labelledby="tab-btn-order"
+      >
+        <!-- 주문 폼 시작 -->
+        <form id="order-form" novalidate>
+          <!-- 1. 이름 (필수, text) -->
+          <div class="form-group" id="group-name">
+            <label for="customer-name" class="form-label" id="label-customer-name">
+              이름<span class="required-badge" aria-label="필수">*</span>
+            </label>
+            <input
+              type="text"
+              id="customer-name"
+              name="customerName"
+              placeholder="주문하시는 분의 성함을 입력해주세요"
+              class="input-field"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <!-- 2. 전화번호 (tel) -->
+          <div class="form-group" id="group-phone">
+            <label for="customer-phone" class="form-label" id="label-customer-phone">전화번호</label>
+            <input
+              type="tel"
+              id="customer-phone"
+              name="customerPhone"
+              placeholder="010-0000-0000"
+              class="input-field"
+              autocomplete="tel"
+            />
+          </div>
+
+          <!-- 3. 포장/매장 선택 (라디오 버튼, 가로 배치, 포장 기본 선택) -->
+          <div class="form-group" id="group-dining-type">
+            <span class="form-label" id="label-dining-type-title">이용 방식</span>
+            <div class="horizontal-options" role="radiogroup" aria-labelledby="label-dining-type-title">
+              <label class="option-label" for="dining-takeout" id="label-dining-takeout">
+                <input type="radio" id="dining-takeout" name="diningType" value="takeout" data-name="포장" checked />
+                <span>🛍️ 포장 (Take-out)</span>
+              </label>
+              <label class="option-label" for="dining-store" id="label-dining-store">
+                <input type="radio" id="dining-store" name="diningType" value="store" data-name="매장" />
+                <span>☕ 매장 (For Here)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 4. 음료 선택 (드롭다운) -->
+          <div class="form-group" id="group-beverage">
+            <label for="beverage-select" class="form-label" id="label-beverage">
+              음료 선택<span class="required-badge" aria-label="필수">*</span>
+            </label>
+            <select id="beverage-select" name="beverage" class="select-field" required>
+              <option value="" disabled selected>음료를 선택해주세요</option>
+              <option value="3500" data-name="아메리카노">아메리카노 (3,500원)</option>
+              <option value="4000" data-name="카페라떼">카페라떼 (4,000원)</option>
+              <option value="4500" data-name="카페모카">카페모카 (4,500원)</option>
+              <option value="4500" data-name="바닐라라떼">바닐라라떼 (4,500원)</option>
+              <option value="4500" data-name="녹차라떼">녹차라떼 (4,500원)</option>
+            </select>
+          </div>
+
+          <!-- 5. 사이즈 (라디오 버튼, 가로 배치) -->
+          <div class="form-group" id="group-size">
+            <span class="form-label" id="label-size-title">사이즈 선택</span>
+            <div class="horizontal-options" role="radiogroup" aria-labelledby="label-size-title">
+              <label class="option-label" for="size-s" id="label-size-s">
+                <input type="radio" id="size-s" name="size" value="0" data-name="S" />
+                <span>S (+0원)</span>
+              </label>
+              <label class="option-label" for="size-m" id="label-size-m">
+                <input type="radio" id="size-m" name="size" value="500" data-name="M" checked />
+                <span>M (+500원)</span>
+              </label>
+              <label class="option-label" for="size-l" id="label-size-l">
+                <input type="radio" id="size-l" name="size" value="1000" data-name="L" />
+                <span>L (+1,000원)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 6. 추가 옵션 (체크박스, 가로 배치) -->
+          <div class="form-group" id="group-options">
+            <span class="form-label" id="label-options-title">추가 옵션</span>
+            <div class="horizontal-options" id="options-container" aria-labelledby="label-options-title">
+              <label class="option-label" for="opt-shot" id="label-opt-shot">
+                <input type="checkbox" id="opt-shot" name="option" value="500" data-name="샷 추가" />
+                <span>샷 추가 (+500원)</span>
+              </label>
+              <label class="option-label" for="opt-cream" id="label-opt-cream">
+                <input type="checkbox" id="opt-cream" name="option" value="500" data-name="크림 추가" />
+                <span>크림 추가 (+500원)</span>
+              </label>
+              <label class="option-label" for="opt-syrup" id="label-opt-syrup">
+                <input type="checkbox" id="opt-syrup" name="option" value="300" data-name="시럽 추가" />
+                <span>시럽 추가 (+300원)</span>
+              </label>
+              <label class="option-label" for="opt-decaf" id="label-opt-decaf">
+                <input type="checkbox" id="opt-decaf" name="option" value="0" data-name="디카페인" />
+                <span>디카페인 (+0원)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 7. 수량 (number 타입, 최소 1, 최대 10, 기본값 1) -->
+          <div class="form-group" id="group-quantity">
+            <label for="quantity" class="form-label" id="label-quantity">수량</label>
+            <div class="quantity-wrapper">
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                min="1"
+                max="10"
+                value="1"
+                class="input-field quantity-input"
+              />
+              <span class="quantity-unit">잔 (최대 10잔)</span>
+            </div>
+          </div>
+
+          <!-- 8. 요청사항 (textarea) -->
+          <div class="form-group" id="group-requests">
+            <label for="requests" class="form-label" id="label-requests">요청사항</label>
+            <textarea
+              id="requests"
+              name="requests"
+              rows="3"
+              placeholder="요청사항이 있으시면 적어주세요 (예: 얼음 적게, 덜 달게 등)"
+              class="textarea-field"
+            ></textarea>
+          </div>
+
+          <!-- 예상 금액 표시 영역: 주문하기 버튼 바로 위에 큰 글씨로 표시 -->
+          <div class="price-display-section" id="price-container">
+            <div class="price-text" id="estimated-price">예상 금액: 0원</div>
+          </div>
+
+          <!-- 버튼 영역: 주문하기, 다시 작성 -->
+          <div class="action-buttons" id="action-buttons-group">
+            <!-- 9. 주문하기 버튼 -->
+            <button type="submit" class="btn btn-primary" id="btn-submit-order">
+              <span>주문하기</span>
+            </button>
+            <!-- 10. 다시 작성 버튼 -->
+            <button type="button" class="btn btn-secondary" id="btn-reset">
+              <span>다시 작성</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- 주문 확인 메시지 박스 (연두색 배경, 초록 글씨, 둥근 모서리) -->
+        <section class="order-confirmation" id="order-confirmation" aria-live="polite">
+          <div class="confirmation-header">
+            <span>✓</span>
+            <span>주문이 성공적으로 접수되었습니다!</span>
+          </div>
+          <p id="confirmation-text" class="confirmation-body-text"></p>
+          <!-- 실시간 주문 게시판으로 바로 이동하는 링크 버튼 -->
+          <div class="confirmation-action-row">
+            <button type="button" class="btn-goto-board" id="btn-goto-board">
+              <span>📋 실시간 주문 게시판에서 확인하기 ➔</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 엑셀(Excel)로 주문 내역 저장받기 영역 -->
+        <section class="excel-section" id="excel-export-section">
+          <div class="excel-header">
+            <span class="excel-title">📊 최근 주문 내역 (간편 보기)</span>
+            <span class="excel-count-badge" id="order-count-badge">0건</span>
+          </div>
+          <button type="button" class="btn-excel" id="btn-download-excel" disabled>
+            <span>📥 전체 주문 내역 엑셀(.csv) 다운로드</span>
+          </button>
+          <!-- 최근 주문 이력 리스트 -->
+          <div class="recent-orders-list" id="recent-orders-list">
+            <!-- 자바스크립트에서 동적으로 렌더링 -->
+          </div>
+        </section>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- [탭 2] 실시간 주문 게시판 패널 (Real-time Order Board Panel)       -->
+      <!-- ================================================================= -->
+      <section
+        id="panel-board"
+        class="tab-panel"
+        role="tabpanel"
+        aria-labelledby="tab-btn-board"
+        hidden
+      >
+        <!-- 게시판 상단 실시간 인디케이터 헤더 -->
+        <div class="board-top-bar">
+          <div class="board-live-status">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span class="live-status-text">실시간 주문 현황</span>
+            <span class="live-sync-caption">(실시간 자동 동기화)</span>
+          </div>
+          <div class="board-top-actions">
+            <!-- 엑셀 다운로드 버튼 -->
+            <button
+              type="button"
+              class="btn-board-icon"
+              id="btn-board-excel"
+              title="주문 내역 엑셀 다운로드"
+            >
+              <span>📥 엑셀 저장</span>
+            </button>
+            <!-- 테스트 샘플 주문 1건 즉시 추가 (실시간 테스트용) -->
+            <button
+              type="button"
+              class="btn-board-icon btn-board-sample"
+              id="btn-add-sample-order"
+              title="테스트용 주문 1건 추가"
+            >
+              <span>➕ 테스트 주문</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 실시간 주문 통계 요약 카드 (총 주문, 접수대기, 제조중, 제조완료, 총 매출) -->
+        <div class="board-stats-grid" id="board-stats-grid">
+          <div class="stat-card" id="stat-card-total">
+            <span class="stat-label">전체 주문</span>
+            <span class="stat-value" id="stat-val-total">0</span>
+          </div>
+          <div class="stat-card stat-card-received" id="stat-card-received">
+            <span class="stat-label">🟡 접수 완료</span>
+            <span class="stat-value" id="stat-val-received">0</span>
+          </div>
+          <div class="stat-card stat-card-making" id="stat-card-making">
+            <span class="stat-label">🔵 제조 중</span>
+            <span class="stat-value" id="stat-val-making">0</span>
+          </div>
+          <div class="stat-card stat-card-completed" id="stat-card-completed">
+            <span class="stat-label">🟢 제조 완료</span>
+            <span class="stat-value" id="stat-val-completed">0</span>
+          </div>
+        </div>
+
+        <!-- 실시간 누적 총 매출액 바 -->
+        <div class="board-revenue-bar" id="board-revenue-bar">
+          <span class="revenue-title">💰 실시간 누적 매출</span>
+          <span class="revenue-amount" id="board-total-revenue">0원</span>
+        </div>
+
+        <!-- 필터 및 검색 바 -->
+        <div class="board-controls-section">
+          <!-- 1) 상태별 필터 탭 (전체 / 접수 / 제조중 / 완료) -->
+          <div class="status-filter-group" role="group" aria-label="주문 상태별 필터">
+            <button type="button" class="filter-btn active" data-status="all" id="filter-btn-all">
+              전체 (<span id="filter-count-all">0</span>)
+            </button>
+            <button type="button" class="filter-btn" data-status="received" id="filter-btn-received">
+              접수 (<span id="filter-count-received">0</span>)
+            </button>
+            <button type="button" class="filter-btn" data-status="making" id="filter-btn-making">
+              제조중 (<span id="filter-count-making">0</span>)
+            </button>
+            <button type="button" class="filter-btn" data-status="completed" id="filter-btn-completed">
+              완료 (<span id="filter-count-completed">0</span>)
+            </button>
+          </div>
+
+          <!-- 2) 실시간 검색 필드 (모든 input에 label 연결 필수 충족) -->
+          <div class="board-search-box">
+            <label for="board-search-input" class="board-search-label" id="label-board-search">
+              주문 검색
+            </label>
+            <div class="search-input-wrapper">
+              <span class="search-icon" aria-hidden="true">🔍</span>
+              <input
+                type="text"
+                id="board-search-input"
+                name="boardSearch"
+                placeholder="고객명, 연락처, 음료명으로 검색..."
+                class="input-field board-search-input"
+                autocomplete="off"
+              />
+              <button
+                type="button"
+                class="search-clear-btn"
+                id="btn-clear-search"
+                aria-label="검색어 지우기"
+                hidden
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 실시간 주문 카드 리스트 컨테이너 -->
+        <div class="board-orders-container" id="board-orders-container" aria-live="polite">
+          <!-- 자바스크립트에서 실시간 카드 목록 동적 렌더링 -->
+        </div>
+
+        <!-- 하단 보조 액션 (전체 주문 내역 초기화) -->
+        <div class="board-footer-actions">
+          <button type="button" class="btn-board-clear-all" id="btn-clear-all-orders">
+            <span>🗑️ 전체 주문 내역 비우기</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- 주문 완료 시 색종이 폭죽 애니메이션 캔버스 -->
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <!-- 외부 자바스크립트 모듈 연결 -->
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

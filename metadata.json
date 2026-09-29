@@ -1,0 +1,6 @@
+{
+  "name": "바이브 카페 주문서",
+  "description": "따뜻한 카페 감성의 실시간 금액 계산 및 엑셀 저장 기능을 갖춘 바이브 카페 주문서",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,1300 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   바이브 카페 (Vibe Cafe) 주문서 & 실시간 주문 게시판 스타일시트 (style.css)
+   - 베이스: Content-first darkness (#121212, #181818, #1f1f1f)
+   - 포인트: Spotify Green (#1ed760) 브랜드 악센트
+   - 타이포그래피: SpotifyMixUI / CircularSp 서체 계열 및 계층 구조
+   - 기하 구조: Pill-and-Circle (500px~9999px 둥근 알약 버튼 및 컨트롤)
+   - 그림자: Dark surface heavy shadow (rgba(0, 0, 0, 0.5) 0px 8px 24px)
+   - 인셋 테두리: Inset border combo (rgb(124, 124, 124) 0px 0px 0px 1px inset)
+   ========================================================================== */
+
+/* 기본 리셋 및 전역 레이아웃 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'SpotifyMixUI', 'CircularSp', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  background-color: #121212; /* Spotify Base Level 0 */
+  color: #ffffff;            /* --text-base */
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 36px 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 주문서 및 주문 게시판 메인 컨테이너 (최대 너비 540px, 가운데 정렬) */
+.order-container {
+  width: 100%;
+  max-width: 540px;
+  background-color: #181818; /* Spotify Dark Surface Card */
+  border-radius: 14px;
+  box-shadow: rgba(0, 0, 0, 0.55) 0px 10px 30px; /* Heavy Shadow */
+  padding: 32px 28px;
+  border: 1px solid #242424;
+  margin-bottom: 40px;
+}
+
+/* 상단 헤더 영역 */
+.header-section {
+  text-align: center;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #262626;
+}
+
+.cafe-logo {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 10px auto;
+  border-radius: 50%;
+  background: #1f1f1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 6px 12px;
+  border: 1px solid #2e2e2e;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cafe-logo:hover {
+  transform: scale(1.06);
+  border-color: #1ed760;
+}
+
+.cafe-title {
+  font-size: 24px; /* Spotify Section Title 24px */
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.4px;
+  margin-bottom: 4px;
+}
+
+.cafe-subtitle {
+  font-size: 13.5px; /* Metadata 14px */
+  color: #b3b3b3;   /* Silver Secondary Text */
+  font-weight: 400;
+}
+
+/* ==========================================================================
+   상단 탭 네비게이션 (주문서 작성 vs 실시간 주문 게시판)
+   ========================================================================== */
+.tab-navigation {
+  display: flex;
+  background-color: #141414;
+  padding: 5px;
+  border-radius: 9999px; /* Pill Shape */
+  border: 1px solid #262626;
+  margin-bottom: 24px;
+  gap: 6px;
+}
+
+.tab-button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #b3b3b3;
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.3, 0, 0, 1);
+  font-family: inherit;
+  outline: none;
+  position: relative;
+  user-select: none;
+}
+
+.tab-button:hover:not(.active) {
+  color: #ffffff;
+  background-color: #1f1f1f;
+}
+
+.tab-button.active {
+  background-color: #242424;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tab-button.active .tab-icon {
+  transform: scale(1.1);
+}
+
+.tab-icon {
+  font-size: 15px;
+  transition: transform 0.2s ease;
+}
+
+.tab-label {
+  white-space: nowrap;
+}
+
+/* 탭 버튼 내 실시간 주문 카운트 뱃지 */
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background-color: #1ed760;
+  color: #000000;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 9999px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.tab-button:not(.active) .tab-badge {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+/* 탭 패널 컨텐츠 활성화/비활성화 제어 */
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* 폼 그룹 및 레이블 스타일 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700; /* Bold Binary */
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: 0.1px;
+}
+
+/* 필수 항목 뱃지 (Negative Red: #f3727f) */
+.required-badge {
+  color: #f3727f;
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+/* 텍스트 입력, 셀렉트 박스 (Spotify Pill Search Input Geometry) */
+.input-field,
+.select-field {
+  width: 100%;
+  height: 44px;
+  padding: 0 18px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #ffffff;
+  background-color: #1f1f1f; /* Mid Dark Interactive Surface */
+  border: none;
+  border-radius: 500px;      /* Pill Input */
+  box-shadow: rgb(18, 18, 18) 0px 1px 0px, rgb(124, 124, 124) 0px 0px 0px 1px inset; /* Inset Border Combo */
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  outline: none;
+  appearance: none;
+}
+
+/* 텍스트에어리어 (Comfortable 8px Geometry) */
+.textarea-field {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #ffffff;
+  background-color: #1f1f1f;
+  border: none;
+  border-radius: 8px;
+  box-shadow: rgb(18, 18, 18) 0px 1px 0px, rgb(124, 124, 124) 0px 0px 0px 1px inset;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  outline: none;
+  resize: vertical;
+  min-height: 84px;
+}
+
+/* 포커스 시 Spotify White/Green 인셋 하이라이트 */
+.input-field:focus,
+.select-field:focus,
+.textarea-field:focus {
+  background-color: #242424;
+  box-shadow: rgb(18, 18, 18) 0px 1px 0px, #1ed760 0px 0px 0px 1.5px inset;
+}
+
+.input-field::placeholder,
+.textarea-field::placeholder {
+  color: #727272;
+  font-size: 13.5px;
+}
+
+/* 커스텀 셀렉트 드롭다운 화살표 */
+.select-field {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b3b3b3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 42px;
+  cursor: pointer;
+}
+
+.select-field option {
+  background-color: #1f1f1f;
+  color: #ffffff;
+  padding: 10px;
+}
+
+/* 라디오 버튼 및 체크박스 가로 배치 컨테이너 */
+.horizontal-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 커스텀 선택 칩 (Spotify Full Pill: 9999px) */
+.option-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #1f1f1f;
+  border-radius: 9999px; /* Full Pill Geometry */
+  cursor: pointer;
+  font-size: 13.5px;
+  color: #b3b3b3;        /* Silver */
+  box-shadow: rgb(18, 18, 18) 0px 1px 0px, rgb(80, 80, 80) 0px 0px 0px 1px inset;
+  transition: all 0.2s cubic-bezier(0.3, 0, 0, 1);
+  user-select: none;
+}
+
+.option-label:hover {
+  background-color: #282828;
+  color: #ffffff;
+  box-shadow: rgb(18, 18, 18) 0px 1px 0px, rgb(140, 140, 140) 0px 0px 0px 1px inset;
+}
+
+/* 라디오/체크박스 인풋 스타일 */
+.option-label input[type="radio"],
+.option-label input[type="checkbox"] {
+  accent-color: #1ed760; /* Spotify Green */
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+}
+
+/* 활성화(선택) 상태: 밝아진 서피스 + 화이트 텍스트 + 그린 악센트 인셋 */
+.option-label:has(input:checked) {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: rgb(18, 18, 18) 0px 1px 0px, #1ed760 0px 0px 0px 1.5px inset;
+}
+
+/* 수량 조절 입력 필드 특화 */
+.quantity-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quantity-input {
+  width: 100px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.quantity-unit {
+  font-size: 13.5px;
+  color: #b3b3b3;
+}
+
+/* 실시간 예상 금액 표시 영역 (Spotify Player Widget 스타일) */
+.price-display-section {
+  margin: 24px 0 20px 0;
+  padding: 16px 20px;
+  background-color: #121212;
+  border-radius: 8px;
+  border: 1px solid #282828;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 8px 8px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.price-text {
+  font-size: 23px;
+  font-weight: 700;
+  color: #1ed760; /* Spotify Green */
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 버튼 컨테이너 */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* 버튼 공통 스타일 (Spotify Mix UI Uppercase Systematic Label) */
+.btn {
+  flex: 1;
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border-radius: 9999px; /* Full Pill Radius */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.3, 0, 0, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+/* 주문하기 버튼 (Spotify Green CTA) */
+.btn-primary {
+  background-color: #1ed760;
+  color: #000000; /* Black on Green */
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 8px 24px;
+}
+
+.btn-primary:hover {
+  background-color: #1fdf64;
+  transform: scale(1.02);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  background-color: #169c46;
+}
+
+/* 다시 작성 버튼 (Spotify Outlined Pill) */
+.btn-secondary {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #7c7c7c; /* Light Border */
+}
+
+.btn-secondary:hover {
+  border-color: #ffffff;
+  transform: scale(1.02);
+  background-color: #1f1f1f;
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* 주문 확인 메시지 박스 (Spotify Notification Banner) */
+.order-confirmation {
+  display: none;
+  margin-top: 24px;
+  padding: 18px 20px;
+  background-color: #1a271e;
+  border: 1px solid #1ed760; /* Green accent border */
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 8px 16px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.order-confirmation.show {
+  display: block;
+}
+
+.confirmation-header {
+  font-weight: 700;
+  font-size: 15px;
+  color: #1ed760;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confirmation-body-text {
+  font-size: 13.5px;
+  color: #eaeaea;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.confirmation-action-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-goto-board {
+  background-color: #1ed760;
+  color: #000000;
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-goto-board:hover {
+  background-color: #22e668;
+  transform: scale(1.03);
+}
+
+/* 에러 알림 바 (Negative Red: #f3727f) */
+.alert-box {
+  display: none;
+  margin-bottom: 20px;
+  padding: 12px 18px;
+  background-color: #241617;
+  border: 1px solid #f3727f;
+  border-radius: 8px;
+  color: #f3727f;
+  font-size: 13.5px;
+  font-weight: 700;
+  animation: shake 0.3s ease;
+}
+
+.alert-box.show {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 엑셀 관리 및 다운로드 영역 */
+.excel-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #282828;
+}
+
+.excel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.excel-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.excel-count-badge {
+  background-color: #242424;
+  color: #1ed760;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-weight: 700;
+  border: 1px solid #333333;
+}
+
+/* 엑셀 다운로드 버튼 (Spotify Green Bordered Pill) */
+.btn-excel {
+  width: 100%;
+  background-color: #1f1f1f;
+  color: #1ed760;
+  border: 1px solid #1ed760;
+  padding: 12px 18px;
+  font-size: 13px;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.3, 0, 0, 1);
+  font-family: inherit;
+}
+
+.btn-excel:hover:not(:disabled) {
+  background-color: #1ed760;
+  color: #000000;
+  transform: scale(1.02);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 6px 16px;
+}
+
+.btn-excel:disabled {
+  background-color: #1a1a1a;
+  border-color: #333333;
+  color: #555555;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 최근 주문 이력 리스트 (간편 보기) */
+.recent-orders-list {
+  margin-top: 14px;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #282828;
+  border-radius: 8px;
+  background-color: #121212;
+}
+
+.recent-order-item {
+  padding: 11px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid #1f1f1f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.recent-order-item:hover {
+  background-color: #1f1f1f;
+}
+
+.recent-order-item:last-child {
+  border-bottom: none;
+}
+
+.recent-order-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recent-order-name {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.recent-order-desc {
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.recent-order-price {
+  font-weight: 700;
+  color: #1ed760;
+  white-space: nowrap;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   [주문 게시판] 전용 세부 컴포넌트 스타일
+   ========================================================================== */
+
+/* 상단 실시간 인디케이터 바 */
+.board-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #282828;
+}
+
+.board-live-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 초록색 실시간 깜빡임 펄스 점 */
+.live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #1ed760;
+  box-shadow: 0 0 10px #1ed760;
+  animation: livePulse 1.8s infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(30, 215, 96, 0.7);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 7px rgba(30, 215, 96, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(30, 215, 96, 0);
+  }
+}
+
+.live-status-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.live-sync-caption {
+  font-size: 11.5px;
+  color: #888888;
+}
+
+.board-top-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-board-icon {
+  background-color: #242424;
+  color: #b3b3b3;
+  border: 1px solid #383838;
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-board-icon:hover {
+  background-color: #2e2e2e;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+.btn-board-sample {
+  color: #1ed760;
+  border-color: rgba(30, 215, 96, 0.4);
+}
+
+.btn-board-sample:hover {
+  background-color: #1a2a1f;
+  color: #22e668;
+  border-color: #1ed760;
+}
+
+/* 실시간 통계 그리드 (전체 / 접수 / 제조중 / 완료) */
+.board-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stat-card {
+  background-color: #1f1f1f;
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+  border: 1px solid #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #a0a0a0;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-card-received .stat-value {
+  color: #f59e0b; /* Amber */
+}
+
+.stat-card-making .stat-value {
+  color: #539df5; /* Blue */
+}
+
+.stat-card-completed .stat-value {
+  color: #1ed760; /* Green */
+}
+
+/* 실시간 누적 매출 바 */
+.board-revenue-bar {
+  background: linear-gradient(90deg, #1b281f 0%, #171d18 100%);
+  border: 1px solid rgba(30, 215, 96, 0.3);
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.revenue-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c0d8c7;
+}
+
+.revenue-amount {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1ed760;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 필터 및 검색 컨트롤 섹션 */
+.board-controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* 상태별 필터 세그먼트 버튼 그룹 */
+.status-filter-group {
+  display: flex;
+  background-color: #141414;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #262626;
+  gap: 4px;
+}
+
+.filter-btn {
+  flex: 1;
+  background: transparent;
+  color: #888888;
+  border: none;
+  padding: 7px 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.filter-btn:hover:not(.active) {
+  color: #ffffff;
+  background-color: #1e1e1e;
+}
+
+.filter-btn.active {
+  background-color: #282828;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* 검색 필드 스타일 */
+.board-search-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.board-search-label {
+  font-size: 12px;
+  color: #a0a0a0;
+  font-weight: 600;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 13px;
+  color: #888888;
+  pointer-events: none;
+}
+
+.board-search-input {
+  height: 40px;
+  padding-left: 36px;
+  padding-right: 36px;
+  font-size: 13.5px;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #888888;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.search-clear-btn:hover {
+  color: #ffffff;
+}
+
+/* 실시간 주문 카드 목록 컨테이너 */
+.board-orders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 220px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* 커스텀 스크롤바 */
+.board-orders-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.board-orders-container::-webkit-scrollbar-track {
+  background: #141414;
+  border-radius: 3px;
+}
+
+.board-orders-container::-webkit-scrollbar-thumb {
+  background: #2e2e2e;
+  border-radius: 3px;
+}
+
+.board-orders-container::-webkit-scrollbar-thumb:hover {
+  background: #444444;
+}
+
+/* 개별 주문 카드 (Spotify Dark Card Geometry) */
+.board-order-card {
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  border: 1px solid #2a2a2a;
+  padding: 14px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  position: relative;
+}
+
+.board-order-card:hover {
+  background-color: #1e1e1e;
+  border-color: #383838;
+}
+
+/* 상태별 왼쪽 테두리 하이라이트 */
+.board-order-card.status-received {
+  border-left: 4px solid #f59e0b; /* Amber */
+}
+
+.board-order-card.status-making {
+  border-left: 4px solid #539df5; /* Blue */
+}
+
+.board-order-card.status-completed {
+  border-left: 4px solid #1ed760; /* Green */
+}
+
+/* 카드 상단 헤더 (주문 번호, 경과 시간, 상태 뱃지) */
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #262626;
+}
+
+.order-num-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-number {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.order-rel-time {
+  font-size: 11.5px;
+  color: #888888;
+}
+
+/* 주문 상태 뱃지 */
+.order-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+}
+
+.badge-received {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.badge-making {
+  background-color: rgba(83, 157, 245, 0.15);
+  color: #539df5;
+  border: 1px solid rgba(83, 157, 245, 0.4);
+}
+
+.badge-completed {
+  background-color: rgba(30, 215, 96, 0.15);
+  color: #1ed760;
+  border: 1px solid rgba(30, 215, 96, 0.4);
+}
+
+/* 카드 고객 정보 행 */
+.order-customer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.order-customer-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.customer-name-bold {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.customer-phone-sub {
+  font-size: 12px;
+  color: #888888;
+}
+
+.dining-pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background-color: #262626;
+  color: #d1d1d1;
+}
+
+.dining-pill.takeout {
+  border-left: 2px solid #ffa42b;
+}
+
+.dining-pill.store {
+  border-left: 2px solid #539df5;
+}
+
+/* 음료 및 옵션 상세 행 */
+.order-beverage-row {
+  background-color: #141414;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-beverage-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.beverage-main {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.size-pill {
+  font-size: 11px;
+  background-color: #2c2c2c;
+  color: #1ed760;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.options-sub {
+  font-size: 12px;
+  color: #b3b3b3;
+}
+
+.quantity-badge {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #242424;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* 고객 요청사항 콜아웃 */
+.order-request-box {
+  background-color: #181c19;
+  border-left: 3px solid #1ed760;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #c8e0cc;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+/* 결제 금액 및 상태 변경 액션 툴바 */
+.order-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid #222222;
+}
+
+.order-price-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1ed760;
+  font-variant-numeric: tabular-nums;
+}
+
+.order-status-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-card-action {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 상태 변경 버튼 변형 */
+.btn-action-start {
+  background-color: #539df5;
+  color: #000000;
+}
+
+.btn-action-start:hover {
+  background-color: #71adf7;
+  transform: scale(1.03);
+}
+
+.btn-action-finish {
+  background-color: #1ed760;
+  color: #000000;
+}
+
+.btn-action-finish:hover {
+  background-color: #22e668;
+  transform: scale(1.03);
+}
+
+.btn-action-done {
+  background-color: #2a2a2a;
+  color: #b3b3b3;
+  border: 1px solid #444444;
+}
+
+.btn-action-done:hover {
+  background-color: #383838;
+  color: #ffffff;
+}
+
+.btn-action-delete {
+  background: transparent;
+  color: #888888;
+  border: 1px solid #333333;
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.btn-action-delete:hover {
+  color: #f3727f;
+  border-color: #f3727f;
+}
+
+/* 빈 상태 (Empty State) */
+.board-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 16px;
+  text-align: center;
+  background-color: #141414;
+  border-radius: 10px;
+  border: 1px dashed #2a2a2a;
+  margin: 10px 0;
+}
+
+.empty-state-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.empty-state-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.empty-state-desc {
+  font-size: 12.5px;
+  color: #888888;
+  margin-bottom: 16px;
+}
+
+.btn-empty-create {
+  background-color: #1f1f1f;
+  color: #1ed760;
+  border: 1px solid #1ed760;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-empty-create:hover {
+  background-color: #1ed760;
+  color: #000000;
+}
+
+/* 하단 내역 전체 비우기 버튼 */
+.board-footer-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-board-clear-all {
+  background: transparent;
+  border: none;
+  color: #666666;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-family: inherit;
+  padding: 4px 6px;
+}
+
+.btn-board-clear-all:hover {
+  color: #f3727f;
+  text-decoration: underline;
+}
+
+/* 애니메이션 효과 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* 반응형 모바일 */
+@media (max-width: 480px) {
+  body {
+    padding: 16px 10px;
+  }
+
+  .order-container {
+    padding: 22px 16px;
+    border-radius: 10px;
+  }
+
+  .tab-navigation {
+    padding: 4px;
+  }
+
+  .tab-button {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+  
+  .horizontal-options {
+    gap: 6px;
+  }
+  
+  .option-label {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+  
+  .price-text {
+    font-size: 21px;
+  }
+
+  .board-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 주문 완료 시 색종이 폭죽 애니메이션 캔버스 */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
