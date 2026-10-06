@@ -585,10 +585,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!actionBtn) return;
 
       const action = actionBtn.getAttribute('data-action');
-      const orderId = parseInt(actionBtn.getAttribute('data-id'), 10);
+      const orderId = actionBtn.getAttribute('data-id');
       if (!orderId) return;
 
-      const targetOrder = orderHistory.find((o) => o.id === orderId);
+      const targetOrder = orderHistory.find((o) => String(o.id) === String(orderId));
       if (!targetOrder) return;
 
       if (action === 'make') {
@@ -608,8 +608,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateOrderStatusInSupabase(orderId, 'completed');
       } else if (action === 'delete') {
         // 주문 삭제
-        if (confirm(`${targetOrder.customerName}님의 주문(#${targetOrder.id.toString().slice(-4)})을 목록에서 삭제하시겠습니까?`)) {
-          orderHistory = orderHistory.filter((o) => o.id !== orderId);
+        const orderShortId = String(targetOrder.id).slice(-4);
+        if (confirm(`${targetOrder.customerName}님의 주문(#${orderShortId})을 목록에서 삭제하시겠습니까?`)) {
+          orderHistory = orderHistory.filter((o) => String(o.id) !== String(orderId));
           updateAllUI();
           deleteOrderFromSupabase(orderId);
         }
